@@ -1,8 +1,16 @@
 import { DateTime } from "luxon";
 import TravelCard from "./TravelCard";
-import { isValidDepartureArrivalRange } from "../utils/constants";
+import {
+  getRangeIntersectionDays,
+  isValidDepartureArrivalRange,
+} from "../utils/constants";
 
-const TravelHistory = ({ dateRanges, setDateRanges, setError }) => {
+const TravelHistory = ({
+  dateRanges,
+  setDateRanges,
+  setError,
+  financialYearEnd,
+}) => {
   const removeDateRange = (index) => {
     const newDateRanges = dateRanges.filter((_, i) => i !== index);
     setDateRanges(newDateRanges);
@@ -12,16 +20,35 @@ const TravelHistory = ({ dateRanges, setDateRanges, setError }) => {
     let hasError = false;
     const newDateRanges = dateRanges.map((range, i) => {
       if (i === index) {
+        let validDays = null;
         if (field === "from") {
           hasError = !isValidDepartureArrivalRange(value, range.to);
+          if (range.to !== "") {
+            validDays = getRangeIntersectionDays(
+              {
+                from: DateTime.fromISO(value),
+                to: DateTime.fromISO(range.to),
+              },
+              financialYearEnd
+            );
+          }
         } else {
           hasError = !isValidDepartureArrivalRange(range.from, value);
+          if (range.from !== "") {
+            validDays = getRangeIntersectionDays(
+              {
+                from: DateTime.fromISO(range.from),
+                to: DateTime.fromISO(value),
+              },
+              financialYearEnd
+            );
+          }
         }
         return {
           ...range,
           [field]: value,
-          days: null,
-          validDays: null,
+          validDays,
+          outOfRange: validDays === -1,
         };
       }
       return range;

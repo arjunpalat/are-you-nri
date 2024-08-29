@@ -1,5 +1,6 @@
 import React from "react";
 import { MdDeleteForever } from "react-icons/md";
+import { getErrorMessage } from "../utils/constants";
 
 const TravelCard = ({ index, range, handleDateChange, removeDateRange }) => {
   return (
@@ -36,14 +37,17 @@ const TravelCard = ({ index, range, handleDateChange, removeDateRange }) => {
           <MdDeleteForever className="" />
         </button>
       </div>
-      {range.days !== null && (
+      {range.validDays !== null && (
         <div className="flex mt-4 justify-end">
-          <p className="text-gray-700 rounded-md p-1 bg-blue-200">
-            Days Abroad: {range.days}
-          </p>
-          <p className="ml-4 text-gray-700 rounded-md p-1 bg-blue-200">
-            NRI Days: {range.validDays}
-          </p>
+          {!range.outOfRange ? (
+            <p className="ml-4 text-gray-700 rounded-md p-1 bg-blue-200">
+              NRI Days: {range.validDays}
+            </p>
+          ) : (
+            <p className="ml-4 text-gray-100 rounded-md p-1 bg-red-500">
+              {getErrorMessage("outOfRange")}
+            </p>
+          )}
         </div>
       )}
     </div>

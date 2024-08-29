@@ -1,12 +1,15 @@
 import { DateTime } from "luxon";
 
 const NRIDaysLeap = 185;
+
 const NRIDaysNonLeap = 184;
+
 const errorMessages = {
   noFinancialYear: "Please select a financial year to proceed",
   noHistory: "Please add travel history for calculation",
   invalidRange: "Departure date should be before arrival date",
   emptyDate: "Please provide both the departure and arrival dates",
+  outOfRange: "⚠️ Dates Are Outside Financial Year",
 };
 
 const getValidRange = (year) => {
@@ -58,7 +61,7 @@ export const getRangeIntersectionDays = (userRange, year) => {
     userRange.from.ts > validRange.to.ts ||
     userRange.to.ts < validRange.from.ts
   ) {
-    return 0;
+    return -1;
   }
 
   if (from > userRange.from.ts) {
@@ -84,3 +87,5 @@ export const isValidDepartureArrivalRange = (from, to) => {
   }
   return DateTime.fromISO(from).ts < DateTime.fromISO(to).ts;
 };
+
+export const oifcNote = `"Both the Day of Arrival into India and the Day of Departure from India are counted as the days of stay in India"`;

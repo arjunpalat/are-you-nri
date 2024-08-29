@@ -1,13 +1,8 @@
-import { useState, useRef } from "react";
-import {
-  getFinancialYear,
-  getNRIDays,
-  getRangeIntersectionDays,
-} from "./utils/constants";
+import { useState } from "react";
+import { getFinancialYear, getNRIDays } from "./utils/constants";
 import FinancialYearSelector from "./components/FinancialYearSelector";
 import TravelHistory from "./components/TravelHistory";
 import Actions from "./components/Actions";
-import { DateTime } from "luxon";
 import Summary from "./components/Summary";
 import Modal from "./components/Modal";
 
@@ -24,7 +19,7 @@ const App = () => {
     }
     setDateRanges([
       ...dateRanges,
-      { from: "", to: "", days: null, validDays: null },
+      { from: "", to: "", outOfRange: false, validDays: null },
     ]);
   };
 
@@ -45,45 +40,28 @@ const App = () => {
       return;
     }
     let hasError = false;
-    const results = dateRanges.map((range) => {
+    for (const range of dateRanges) {
       if (range.from === "" || range.to === "") {
         hasError = true;
+        setError("emptyDate");
+        break;
+      } else if (range.outOfRange) {
+        hasError = true;
+        setError("outOfRange");
+        break;
       }
-
-      const fromDate = DateTime.fromISO(range.from);
-      const toDate = DateTime.fromISO(range.to);
-      let days = toDate.diff(fromDate, "days").days - 1;
-      days = days < 0 ? 0 : days;
-      let validDays = getRangeIntersectionDays(
-        {
-          from: fromDate,
-          to: toDate,
-        },
-        financialYearEnd
-      );
-      validDays = validDays < 0 ? 0 : validDays;
-      totalValidDays += validDays;
-
-      return {
-        from: range.from,
-        to: range.to,
-        days,
-        validDays,
-      };
-    });
-    if (hasError) {
-      setError("emptyDate");
-      setResult(null);
-      return;
+      totalValidDays += range.validDays;
     }
-    setDateRanges(results);
-    setResult({
-      totalValidDays,
-      financialYear: getFinancialYear(financialYearEnd),
-      requiredDays: getNRIDays(financialYearEnd),
-      status:
-        totalValidDays >= getNRIDays(financialYearEnd) ? "NRI" : "Resident",
-    });
+
+    if (!hasError) {
+      setResult({
+        totalValidDays,
+        financialYear: getFinancialYear(financialYearEnd),
+        requiredDays: getNRIDays(financialYearEnd),
+        status:
+          totalValidDays >= getNRIDays(financialYearEnd) ? "NRI" : "Resident",
+      });
+    }
   };
 
   return (
@@ -98,6 +76,7 @@ const App = () => {
           dateRanges={dateRanges}
           setDateRanges={setDateRanges}
           setError={setError}
+          financialYearEnd={financialYearEnd}
         />
         <Actions
           addDateRange={addDateRange}

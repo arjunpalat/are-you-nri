@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { oifcNote } from "../utils/constants";
 const Summary = ({ result }) => {
   const summaryRef = useRef(null);
 
@@ -7,7 +8,7 @@ const Summary = ({ result }) => {
       summaryRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [result]);
-  
+
   return (
     <div ref={summaryRef}>
       {result !== null && (
@@ -43,6 +44,10 @@ const Summary = ({ result }) => {
               </tr>
             </tbody>
           </table>
+          <div className="mt-8 text-center">
+            <span>As per the </span>
+            <em className="font-bold">OIFC Guide Book, </em>
+            <em className="font-medium text-red-800">{oifcNote}</em></div>
         </div>
       )}
     </div>
