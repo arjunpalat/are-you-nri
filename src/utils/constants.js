@@ -2,6 +2,12 @@ import { DateTime } from "luxon";
 
 const NRIDaysLeap = 185;
 const NRIDaysNonLeap = 184;
+const errorMessages = {
+  noFinancialYear: "Please select a financial year to proceed",
+  noHistory: "Please add travel history for calculation",
+  invalidRange: "Departure date should be before arrival date",
+  emptyDate: "Please provide both the departure and arrival dates",
+};
 
 const getValidRange = (year) => {
   const endYear = Number(year);
@@ -66,4 +72,15 @@ export const getRangeIntersectionDays = (userRange, year) => {
   from = DateTime.fromMillis(from);
   to = DateTime.fromMillis(to);
   return to.diff(from, "days").days + correction;
+};
+
+export const getErrorMessage = (error) => {
+  return errorMessages[error] || "An error occurred";
+};
+
+export const isValidDepartureArrivalRange = (from, to) => {
+  if (from === "" || to === "") {
+    return true;
+  }
+  return DateTime.fromISO(from).ts < DateTime.fromISO(to).ts;
 };

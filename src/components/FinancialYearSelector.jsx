@@ -3,12 +3,12 @@ import { financialYears } from "../utils/constants";
 const FinancialYearSelector = ({ financialYearEnd, setFinancialYearEnd }) => {
   return (
     <div className="mt-2 flex items-center">
-      <label htmlFor="financialYear" className="block text-2xl font-bold">
+      <label htmlFor="financialYear" className="block md:text-2xl font-bold">
         Financial Year:
       </label>
       <select
         id="financialYear"
-        className="rounded-md shadow shadow-emerald-500 p-1 ml-2"
+        className="rounded-md shadow shadow-emerald-500 p-1 ml-2 text-sm md:text-lg"
         onChange={(e) => setFinancialYearEnd(e.target.value)}
         value={financialYearEnd}
       >
