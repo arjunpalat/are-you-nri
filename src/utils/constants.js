@@ -88,4 +88,21 @@ export const isValidDepartureArrivalRange = (from, to) => {
   return DateTime.fromISO(from).ts < DateTime.fromISO(to).ts;
 };
 
+export const verifyAndUpdateDateRanges = (dateRanges, financialYearEnd) => {
+  return dateRanges.map((range) => {
+    let validDays = null;
+    if (range.from !== "" && range.to !== "") {
+      validDays = getRangeIntersectionDays({
+        from: DateTime.fromISO(range.from),
+        to: DateTime.fromISO(range.to),
+      }, financialYearEnd);
+    }
+    return {
+      ...range,
+      validDays,
+      outOfRange: validDays === -1,
+    };
+  });
+};
+
 export const oifcNote = `"Both the Day of Arrival into India and the Day of Departure from India are counted as the days of stay in India"`;

@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { getFinancialYear, getNRIDays } from "./utils/constants";
+import { useEffect, useState } from "react";
+import {
+  getFinancialYear,
+  getNRIDays,
+  verifyAndUpdateDateRanges,
+} from "./utils/constants";
 import FinancialYearSelector from "./components/FinancialYearSelector";
 import TravelHistory from "./components/TravelHistory";
 import Actions from "./components/Actions";
@@ -11,6 +15,11 @@ const App = () => {
   const [dateRanges, setDateRanges] = useState([]);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setDateRanges(verifyAndUpdateDateRanges(dateRanges, financialYearEnd));
+    setResult(null);
+  }, [financialYearEnd]);
 
   const addDateRange = () => {
     if (financialYearEnd === "") {
